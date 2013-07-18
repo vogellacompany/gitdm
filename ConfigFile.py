@@ -167,7 +167,10 @@ def ConfigFile (name, confdir):
     try:
         file = open (name, 'r')
     except IOError:
-        croak ('Unable to open config file %s' % (name))
+        try:
+            file = open (os.path.join (confdir, name), 'r')
+        except IOError:
+            croak ('Unable to open config file %s' % (name))
     line = ReadConfigLine (file)
     while line:
         sline = line.split (None, 2)
