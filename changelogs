@@ -238,6 +238,7 @@ NemptyCL = 0
 
 Nsinglesob = 0
 Nnosob = 0
+Nothers = 0
 
 p = grabpatch(sys.stdin)
 while p:
@@ -249,14 +250,17 @@ while p:
     if len(p.signoffs) == 0:
         Nnosob += 1
         LogNoSOB(p)
-    elif len(p.signoffs) == 1 and p.othertags == 0:
+    elif len(p.signoffs) == 1:
         Nsinglesob += 1
-        LogSSPatch(p)
+        if p.othertags == 0:
+            LogSSPatch(p)
+        else:
+            Nothers += 1
     p = grabpatch(sys.stdin)
 
 print '%d patches, %d w/o changelog' % (Npatches, NemptyCL)
-print '  %d w/o signoff, %d w/1 signoff, %d SS culprits' % (Nnosob, Nsinglesob,
-                                                            len(SingleSSCulprits))
+print '  %d w/o signoff, %d w/1 signoff, %d no others, %d SS culprits' % \
+      (Nnosob, Nsinglesob, Nsinglesob - Nothers, len(SingleSSCulprits))
 print '\nMost single signoffs:'
 sorted = SortedCulprits(SingleSSCulprits)[:20]
 PrintCulprits(SingleSSCulprits, sorted)
