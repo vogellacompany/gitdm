@@ -24,7 +24,7 @@ patterns = {
     'tagcommit': re.compile (r'^commit ([\da-f]+) .*tag: (v[23]\.\d(\.\d\d?)?)'),
     'commit': re.compile (r'^commit ([0-9a-f ]+)'),
     'author': re.compile (r'^Author:' + _pemail + '$'),
-    'signed-off-by': re.compile (r'^\s+Signed-off-by:' + _pemail + '.*$'),
+    'signed-off-by': re.compile (r'^\s+signed-off-by:' + _pemail + '.*$', re.I),
     'merge': re.compile (r'^Merge:.*$'),
     'add': re.compile (r'^\+[^+].*$'),
     'rem': re.compile (r'^-[^-].*$'),
@@ -32,6 +32,7 @@ patterns = {
     # filea, fileb are used only in 'parche mode' (-p)
     'filea': re.compile (r'^---\s+(.*)$'),
     'fileb': re.compile (r'^\+\+\+\s+(.*)$'),
+    'acked-by': re.compile (r'^\s+Acked-by:' + _pemail+ '.*$'),
     'reviewed-by': re.compile (r'^\s+Reviewed-by:' + _pemail+ '.*$'),
     'tested-by': re.compile (r'^\s+tested-by:' + _pemail + '.*$', re.I),
     'reported-by': re.compile (r'^\s+Reported-by:' + _pemail + '.*$'),
