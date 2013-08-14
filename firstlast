@@ -10,6 +10,7 @@ import argparse, pickle
 import sys
 import gitlog
 import database
+import ConfigFile
 
 #
 # Arg processing
@@ -18,10 +19,15 @@ def SetupArgs():
     p = argparse.ArgumentParser()
     p.add_argument('-v', '--versiondb', help = 'Version database file',
                    required = False, default = 'committags.db')
+    p.add_argument('-c', '--config', help = 'Configuration file',
+                   required = True)
+    p.add_argument('-d', '--dbdir', help = 'Where to find the config database files',
+                   required = False, default = '')
     return p.parse_args()
 
 args = SetupArgs()
 VDB = pickle.load(open(args.versiondb, 'r'))
+ConfigFile.ConfigFile(args.config, args.dbdir)
 
 Firsts = { }
 Lasts = { }
@@ -61,3 +67,5 @@ for h in database.AllHackers():
 
 for v in Lasts.keys():
     print v, len(Firsts[v]), len(Lasts[v])
+
+database.DumpDB()
