@@ -18,7 +18,7 @@ import re
 # expressions." Now they have two problems.
 #    -- Jamie Zawinski
 #
-_pemail = r'\s+"?([^<"]+)"?\s<([^>]+)>' # just email addr + name
+_pemail = r'\s+"?([^<]+)"?\s<([^>]+)>' # just email addr + name
 
 patterns = {
     'tagcommit': re.compile (r'^commit ([\da-f]+) .*tag: (v[23]\.\d(\.\d\d?)?)'),
