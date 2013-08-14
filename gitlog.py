@@ -14,12 +14,6 @@ import re
 #
 # Someday.
 #
-InputFile = None
-
-def SetInput(input):
-    global InputFile
-    InputFile = input
-
 SavedLine = ''
 
 def getline(input):
@@ -61,6 +55,10 @@ S_DONE = 4
 #
 def get_header(patch, line, input):
     if line == '':
+        if patch.author == '':
+            print 'Funky auth line in', patch.commit
+            patch.author = database.LookupStoreHacker('Unknown',
+                                                      'unknown@hacker.net')
         return S_DESC
     m = patterns['author'].match(line)
     if m:
@@ -73,10 +71,10 @@ def get_desc(patch, line, input):
         print 'Missing desc in', patch.commit
         return S_CHANGELOG
     patch.desc = line
-    #print 'desc', patch.desc
     line = getline(input)
-    if line:
-        print 'Weird post-desc line in', patch.commit
+    while line:
+        patch.desc += line
+        line = getline(input)
     return S_CHANGELOG
 
 tagline = re.compile(r'^\s+(([-a-z]+-by)|cc):.*@.*$', re.I)
@@ -140,6 +138,7 @@ class patch:
         self.author = ''
         self.signoffs = [ ]
         self.othertags = 0
+        self.added = self.removed = 0
 
 def grabpatch(input):
     #

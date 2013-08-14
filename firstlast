@@ -1,0 +1,63 @@
+#!/usr/bin/pypy
+# -*- python -*-
+#
+# Crank through the log looking at when developers did their first and
+# last patches.
+#
+# git log | firstlast -v versiondb
+#
+import argparse, pickle
+import sys
+import gitlog
+import database
+
+#
+# Arg processing
+#
+def SetupArgs():
+    p = argparse.ArgumentParser()
+    p.add_argument('-v', '--versiondb', help = 'Version database file',
+                   required = False, default = 'committags.db')
+    return p.parse_args()
+
+args = SetupArgs()
+VDB = pickle.load(open(args.versiondb, 'r'))
+
+Firsts = { }
+Lasts = { }
+
+patch = gitlog.grabpatch(sys.stdin)
+while patch:
+    try:
+        v = VDB[patch.commit]
+    except KeyError:
+        print 'Funky commit', patch.commit
+        continue
+    try:
+        x = patch.author.patches
+    except AttributeError:
+        print 'Attr err', patch.commit
+        continue
+    #
+    # The first patch we see is the last they committed, since git
+    # lists things in backwards order.
+    #
+    if len(patch.author.patches) == 0:
+        patch.author.lastvers = v
+        try:
+            Lasts[v].append(patch.author)
+        except KeyError:
+            Lasts[v] = [patch.author]
+    patch.author.firstvers = v
+    patch.author.addpatch(patch)
+    patch = gitlog.grabpatch(sys.stdin)
+
+for h in database.AllHackers():
+    if len(h.patches) > 0:
+        try:
+            Firsts[h.firstvers].append(h)
+        except KeyError:
+            Firsts[h.firstvers] = [h]
+
+for v in Lasts.keys():
+    print v, len(Firsts[v]), len(Lasts[v])

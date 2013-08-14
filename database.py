@@ -118,7 +118,6 @@ def LookupStoreHacker(name, email, mapunknown = False):
 
 def AllHackers ():
     return HackersByID.values ()
-#    return [h for h in HackersByID.values ()] #  if (h.added + h.removed) > 0]
 
 def DumpDB ():
     out = open ('database.dump', 'w')
