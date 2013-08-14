@@ -51,25 +51,25 @@ EmptyCLPatches = { }
 NoSOBPatches = { }
 
 def LogSSPatch(p):
-    LogSSCulprit(p.author)
+    LogSSCulprit(p.author.name)
     try:
-        SSPatches[p.author].append(p)
+        SSPatches[p.author.name].append(p)
     except KeyError:
-        SSPatches[p.author] = [p]
+        SSPatches[p.author.name] = [p]
 
 def LogECLPatch(p):
-    LogEmptyCulprit(p.author)
+    LogEmptyCulprit(p.author.name)
     try:
-        EmptyCLPatches[p.author].append(p)
+        EmptyCLPatches[p.author.name].append(p)
     except KeyError:
-        EmptyCLPatches[p.author] = [p]
+        EmptyCLPatches[p.author.name] = [p]
 
 def LogNoSOB(p):
-    LogNoSOBCulprit(p.author)
+    LogNoSOBCulprit(p.author.name)
     try:
-        NoSOBPatches[p.author].append(p)
+        NoSOBPatches[p.author.name].append(p)
     except KeyError:
-        NoSOBPatches[p.author] = [p]
+        NoSOBPatches[p.author.name] = [p]
 
 LinusURL = 'http://git.kernel.org/linus/'
 def WritePatches(names, patches, file):

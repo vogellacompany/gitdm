@@ -4,6 +4,7 @@
 # Someday this will be the only version of grabpatch, honest.
 #
 from patterns import patterns
+import database
 import re
 
 
@@ -63,7 +64,8 @@ def get_header(patch, line, input):
         return S_DESC
     m = patterns['author'].match(line)
     if m:
-        patch.author = m.group(1)
+        patch.email = database.RemapEmail(m.group(2))
+        patch.author = database.LookupStoreHacker(m.group(1), patch.email)
     return S_HEADER
 
 def get_desc(patch, line, input):
