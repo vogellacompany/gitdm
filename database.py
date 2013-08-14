@@ -103,6 +103,19 @@ def LookupID (id):
     except KeyError:
         return None
 
+def LookupStoreHacker(name, email, mapunknown = False):
+    email = RemapEmail(email)
+    h = LookupEmail(email)
+    if h: # already there
+        return h
+    elist = LookupEmployer(email, mapunknown)
+    h = LookupName(name)
+    if h: # new email
+        h.addemail(email, elist)
+        return h
+    return StoreHacker(name, elist, email)
+
+
 def AllHackers ():
     return HackersByID.values ()
 #    return [h for h in HackersByID.values ()] #  if (h.added + h.removed) > 0]

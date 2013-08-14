@@ -153,19 +153,11 @@ def NoteFileAccess(paths):
             AddAccess(path)
             path, last = os.path.split(path)
 
-
-
+#
+# Local version still, for now
+#
 def LookupStoreHacker(name, email):
-    email = database.RemapEmail(email)
-    h = database.LookupEmail(email)
-    if h: # already there
-        return h
-    elist = database.LookupEmployer(email, MapUnknown)
-    h = database.LookupName(name)
-    if h: # new email
-        h.addemail(email, elist)
-        return h
-    return database.StoreHacker(name, elist, email)
+    return database.LookupStoreHacker(name, email, MapUnknown)
 
 #
 # Date tracking.
