@@ -45,10 +45,15 @@ S_DESC = 1
 #
 S_CHANGELOG = 2
 #
-# ...and the tag section.
+# ...the tag section....
 #
 S_TAGS = 3
-S_DONE = 4
+#
+# ...the numstat section.
+#
+S_NUMSTAT = 4
+
+S_DONE = 5
 
 #
 # The functions to handle each of these states.
@@ -79,7 +84,6 @@ def get_desc(patch, line, input):
 
 tagline = re.compile(r'^\s+(([-a-z]+-by)|cc):.*@.*$', re.I)
 def get_changelog(patch, line, input):
-    #print 'cl', line
     if not line:
         if patch.templog:
             patch.changelog += patch.templog
@@ -100,7 +104,6 @@ def get_tag(patch, line, input):
     #
     # Some people put blank lines in the middle of tags.
     #
-    #print 'tag', line
     if not line:
         return S_TAGS
     #
@@ -109,6 +112,14 @@ def get_tag(patch, line, input):
     if patterns['commit'].match(line):
         SaveLine(line)
         return S_DONE
+    #
+    # Check for a numstat line
+    #
+    if patterns['numstat'].match(line):
+        return get_numstat(patch, line, input)
+    #
+    # Look for interesting tags
+    #
     m = patterns['signed-off-by'].match(line)
     if m:
         patch.signoffs.append(m.group(2))
@@ -123,7 +134,14 @@ def get_tag(patch, line, input):
                 break
     return S_TAGS
 
-grabbers = [ get_header, get_desc, get_changelog, get_tag ]
+def get_numstat(patch, line, input):
+    m = patterns['numstat'].match(line)
+    if not m:
+        return S_DONE
+    patch.addfile(int(m.group(1)), int(m.group(2)), m.group(3))
+    return S_NUMSTAT
+
+grabbers = [ get_header, get_desc, get_changelog, get_tag, get_numstat ]
 
 
 #
@@ -139,6 +157,12 @@ class patch:
         self.signoffs = [ ]
         self.othertags = 0
         self.added = self.removed = 0
+        self.files = [ ]
+
+    def addfile(self, added, removed, file):
+        self.added += added
+        self.removed += removed
+        self.files.append(file)
 
 def grabpatch(input):
     #
