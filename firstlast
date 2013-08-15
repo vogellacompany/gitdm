@@ -23,11 +23,100 @@ def SetupArgs():
                    required = True)
     p.add_argument('-d', '--dbdir', help = 'Where to find the config database files',
                    required = False, default = '')
+    p.add_argument('-f', '--first', help = 'First version for detailed tracking',
+                   required = False, default = '')
+    p.add_argument('-l', '--last', help = 'Last version for detailed tracking',
+                   required = False, default = '')
     return p.parse_args()
 
+#
+# Try to track the first directory a new developer touches.
+#
+FirstDirs = { }
+
+def TrackFirstDirs(patch):
+    dirs = [ ]
+    for file in patch.files:
+        split = file.split('/')
+        if split[0] in ['arch', 'drivers', 'fs']:
+            track = '/'.join(split[0:2])
+        else:
+            track = split[0]
+        if track not in dirs:
+            dirs.append(track)
+    for dir in dirs:
+        try:
+            FirstDirs[dir] += 1
+        except KeyError:
+            FirstDirs[dir] = 1
+
+def cmpdirs(d1, d2):
+    return FirstDirs[d2] - FirstDirs[d1]
+
+def PrintFirstDirs():
+    dirs = FirstDirs.keys()
+    dirs.sort(cmpdirs)
+    for dir in dirs[:20]:
+        print '%5d: %s' % (FirstDirs[dir], dir)
+
+#
+# Let's also track who they worked for.
+#
+FirstEmpls = { }
+
+def TrackFirstEmpl(name):
+    try:
+        FirstEmpls[name] += 1
+    except KeyError:
+        FirstEmpls[name] = 1
+
+def cmpempls(e1, e2):
+    return FirstEmpls[e2] - FirstEmpls[e1]
+
+def PrintFirstEmpls():
+    empls = FirstEmpls.keys()
+    empls.sort(cmpempls)
+    print '\nEmployers:'
+    for e in empls[:20]:
+        print '%5d: %s' % (FirstEmpls[e], e)
+
+#
+# Version comparison stuff.  Kernel-specific, obviously.
+#
+def die(gripe):
+    sys.stderr.write(gripe + '\n')
+    sys.exit(1)
+
+def versionmap(vers):
+    split = vers.split('.')
+    if not (2 <= len(split) <= 3):
+        die('funky version %s' % (vers))
+    if split[0] in ['v2', '2']:
+        return int(split[2])
+    if split[0] in ['v3', '3']:
+        return 100 + int(split[1])
+    die('Funky version %s' % (vers))
+
+T_First = 0
+T_Last = 999999
+
+def SetTrackingVersions(args):
+    global T_First, T_Last
+    if args.first:
+        T_First = versionmap(args.first)
+    if args.last:
+        T_Last = versionmap(args.last)
+
+def TrackingVersion(vers):
+    return T_First <= versionmap(vers) <= T_Last
+
+#
+# Main program.
+#
 args = SetupArgs()
 VDB = pickle.load(open(args.versiondb, 'r'))
 ConfigFile.ConfigFile(args.config, args.dbdir)
+SetTrackingVersions(args)
 
 Firsts = { }
 Lasts = { }
@@ -64,8 +153,16 @@ for h in database.AllHackers():
             Firsts[h.firstvers].append(h)
         except KeyError:
             Firsts[h.firstvers] = [h]
+        #
+        # Track details, but only for versions we care about
+        #
+        if TrackingVersion(h.firstvers):
+            p = h.patches[-1]
+            TrackFirstDirs(p)
+            empl = h.emailemployer(p.email, p.date)
+            TrackFirstEmpl(empl.name)
 
 for v in Lasts.keys():
     print v, len(Firsts[v]), len(Lasts[v])
-
-database.DumpDB()
+PrintFirstDirs()
+PrintFirstEmpls()

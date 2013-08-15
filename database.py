@@ -103,7 +103,7 @@ def LookupID (id):
     except KeyError:
         return None
 
-def LookupStoreHacker(name, email, mapunknown = False):
+def LookupStoreHacker(name, email, mapunknown = True):
     email = RemapEmail(email)
     h = LookupEmail(email)
     if h: # already there
