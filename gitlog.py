@@ -3,9 +3,9 @@
 #
 # Someday this will be the only version of grabpatch, honest.
 #
+import re, rfc822, datetime
 from patterns import patterns
 import database
-import re
 
 
 #
@@ -69,6 +69,11 @@ def get_header(patch, line, input):
     if m:
         patch.email = database.RemapEmail(m.group(2))
         patch.author = database.LookupStoreHacker(m.group(1), patch.email)
+    else:
+        m = patterns['date'].match(line)
+        if m:
+            dt = rfc822.parsedate(m.group(2))
+            patch.date = datetime.date(dt[0], dt[1], dt[2])
     return S_HEADER
 
 def get_desc(patch, line, input):
@@ -138,7 +143,15 @@ def get_numstat(patch, line, input):
     m = patterns['numstat'].match(line)
     if not m:
         return S_DONE
-    patch.addfile(int(m.group(1)), int(m.group(2)), m.group(3))
+    try:
+        patch.addfile(int(m.group(1)), int(m.group(2)), m.group(3))
+    #
+    # Binary files just have "-" in the line fields.  In this case, set
+    # the counts to zero so that we at least track that the file was
+    # touched.
+    #
+    except ValueError:
+        patch.addfile(0, 0, m.group(3))
     return S_NUMSTAT
 
 grabbers = [ get_header, get_desc, get_changelog, get_tag, get_numstat ]
