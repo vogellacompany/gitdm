@@ -65,7 +65,7 @@ def GetCommits(range, tag):
 
 initial = '1da177e4c3f41524e886b7f1b8a0c1fc7321cac2'
 DB[initial] = 'v2.6.12'
-GetCommits('1da177e4c3f41524e886b7f1b8a0c1fc7321cac2..v2.6.12', '2.6.12')
+GetCommits('1da177e4c3f41524e886b7f1b8a0c1fc7321cac2..v2.6.12', 'v2.6.12')
 for v in range(13, 40):
     GetCommits('v2.6.%d..v2.6.%d' % (v - 1, v), 'v2.6.%d' % (v))
 GetCommits('v2.6.39..v3.0', 'v3.0')

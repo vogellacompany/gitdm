@@ -196,8 +196,9 @@ def grabpatch(input):
     while state != S_DONE:
         line = getline(input)
         if line is None:
-            if state != S_TAGS:
-                print 'Ran out of patch'
+            if state != S_NUMSTAT:
+                print 'Ran out of patch', state
+                return None
             return p
         state = grabbers[state](p, line, input)
     return p

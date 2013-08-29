@@ -160,13 +160,17 @@ for h in database.AllHackers():
         if TrackingVersion(h.firstvers):
             p = h.patches[-1]
             TrackFirstDirs(p)
-            empl = h.emailemployer(p.email, p.date)
+            try:
+                empl = h.emailemployer(p.email, p.date)
+            except AttributeError:
+                print 'No email on ', p.commit
+                continue
             TrackFirstEmpl(empl.name)
 
 versions = Lasts.keys()
 
 def cmpvers(v1, v2):
-    return versionmap(v2) - versionmap(v1)
+    return versionmap(v1) - versionmap(v2)  # reverse sort
 versions.sort(cmpvers)
 for v in versions:
     if args.minversions <= 1:
