@@ -79,8 +79,15 @@ def PrintFirstEmpls():
     empls = FirstEmpls.keys()
     empls.sort(cmpempls)
     print '\nEmployers:'
-    for e in empls[:20]:
+    for e in empls[:30]:
         print '%5d: %s' % (FirstEmpls[e], e)
+    #
+    # We "know" that unknown/none are always the top two...
+    #
+    companies = 0
+    for e in empls[2:]:
+        companies += FirstEmpls[e]
+    print 'Companies: %d' % (companies)
 
 #
 # Version comparison stuff.  Kernel-specific, obviously.
@@ -133,6 +140,7 @@ while patch:
         v = VDB[patch.commit]
     except KeyError:
         print 'Funky commit', patch.commit
+        patch = gitlog.grabpatch(sys.stdin)
         continue
     #
     # The first patch we see is the last they committed, since git
