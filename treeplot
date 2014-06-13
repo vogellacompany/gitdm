@@ -178,7 +178,7 @@ def GetCommit():
         #
         m = patterns['ExtMerge'].match(line)
         if m:
-            merge.addtree(LookupTree(m.group(2)))
+            merge.addtree(LookupTree(m.group(3)))
             return merge
         #
         # OK, maybe it's internal
