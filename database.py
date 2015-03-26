@@ -18,7 +18,7 @@ class Hacker:
         self.id = id
         self.employer = [ elist ]
         self.email = [ email ]
-        self.added = self.removed = 0
+        self.changed = self.added = self.removed = 0
         self.patches = [ ]
         self.signoffs = [ ]
         self.reviews = [ ]
@@ -44,6 +44,7 @@ class Hacker:
     def addpatch (self, patch):
         self.added += patch.added
         self.removed += patch.removed
+        self.changed += max(patch.added, patch.removed)
         self.patches.append (patch)
 
     #

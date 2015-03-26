@@ -106,7 +106,7 @@ def ReportByPCount(hlist, cscount):
     EndReport()
             
 def CompareLChanged(h1, h2):
-    return max(h2.added, h2.removed) - max(h1.added, h1.removed)
+    return h2.changed - h1.changed
 
 def ReportByLChanged(hlist, totalchanged):
     hlist.sort(CompareLChanged)
@@ -114,10 +114,8 @@ def ReportByLChanged(hlist, totalchanged):
     BeginReport('Developers with the most changed lines')
     for h in hlist:
         pcount = len(h.patches)
-        changed = max(h.added, h.removed)
-        delta = h.added - h.removed
-        if (h.added + h.removed) > 0:
-            ReportLine(h.name, changed, (changed*100.0)/totalchanged)
+        if h.changed > 0:
+            ReportLine(h.name, h.changed, (h.changed*100.0)/totalchanged)
         count += 1
         if count >= ListCount:
             break
