@@ -4,6 +4,7 @@
 #
 # This is the painfully slow reworked brute-force version that
 # takes forever to run, but which hopefully gets the right results
+# It has been pretty much superseded by inittags, though.
 #
 # committags [git-args]
 #

@@ -56,6 +56,7 @@ def cmpdirs(d1, d2):
     return FirstDirs[d2] - FirstDirs[d1]
 
 def PrintFirstDirs():
+    print '\nDirectories touched by first commits:'
     dirs = FirstDirs.keys()
     dirs.sort(cmpdirs)
     for dir in dirs[:20]:
@@ -98,12 +99,14 @@ def die(gripe):
 
 def versionmap(vers):
     split = vers.split('.')
-    if not (2 <= len(split) <= 3):
+    if not (2 <= len(split) <= 4):
         die('funky version %s' % (vers))
     if split[0] in ['v2', '2']:
         return int(split[2])
     if split[0] in ['v3', '3']:
         return 100 + int(split[1])
+    if split[0] in ['v4', '4']:
+        return 120 + int(split[1])
     die('Funky version %s' % (vers))
 
 T_First = 0
@@ -173,6 +176,8 @@ for h in database.AllHackers():
             except AttributeError:
                 print 'No email on ', p.commit
                 continue
+            if empl.name == '(Unknown)':
+                print 'UNK: %s %s' % (p.email, h.name)
             TrackFirstEmpl(empl.name)
 
 versions = Lasts.keys()

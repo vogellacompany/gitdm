@@ -69,10 +69,13 @@ GetCommits('1da177e4c3f41524e886b7f1b8a0c1fc7321cac2..v2.6.12', 'v2.6.12')
 for v in range(13, 40):
     GetCommits('v2.6.%d..v2.6.%d' % (v - 1, v), 'v2.6.%d' % (v))
 GetCommits('v2.6.39..v3.0', 'v3.0')
+for v in range(1, 20):
+    GetCommits('v3.%d..v3.%d' % (v - 1, v), 'v3.%d' % (v))
+GetCommits('v3.19..v4.0', 'v4.0')
 final = args.version
 for v in range(1, final):
-    GetCommits('v3.%d..v3.%d' % (v - 1, v), 'v3.%d' % (v))
-GetCommits('v3.%d..' % (final - 1), 'v3.%d' % (final))
+    GetCommits('v4.%d..v4.%d' % (v - 1, v), 'v4.%d' % (v))
+GetCommits('v4.%d..' % (final - 1), 'v4.%d' % (final))
 
 print '\nFound %d commits' % (len(DB.keys()))
 pickle.dump(DB, out)
